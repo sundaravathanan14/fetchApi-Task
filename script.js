@@ -35,27 +35,54 @@ function getData(data){
     <p class="card-text">Capital:${data[i].capital}</p>
     <p class="card-text">Region:${data[i].region}</p>
     <p class="card-text">Country code:${data[i].alpha3Code}</p>
-    <button class="btn btn-primary" id="${data[i].name}">Click for Weather</button>
+    <button class="btn btn-primary" onclick="getWeather('${data[i].latlng}')" >Click for Weather</button>
   </div>
 </div>
       </div>`;
-      getWeather(`${data[i].name}`);
+     
       
-      //document.getElementById(`${data[i].name}`).addEventListener("click", getWeather);
+      
           }
 }
 
 function getWeather(data){
-    console.log(data);
-    document.getElementById(data).addEventListener("click", function() {
-        // Function to execute when the button is clicked
-        console.log("Button  clicked!");
-      });
-    // document.getElementById(`${data}`).onclick = function() {
-    //     console.log("hgsdfhbdsd");
-    //   };
+    var latlon=data.split(',');
+    var apiKey ="2456919eae82039d466104d57053167d";
+    var lat = latlon[0];
+    var lng = latlon[1];
+    var weatherApi = fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${apiKey}`);
+   getWeatherData(weatherApi);
 
 }
-function getWeatherData(){
-    
+ // feting country from api
+ async function getWeatherData(data){
+  var weatherData=await data;
+  
+  var  weatherReport=await weatherData.json();
+  display(weatherReport);
+
 }
+var dataDisplay = document.createElement("div");
+document.body.append(dataDisplay);
+ function display(data){
+  dataDisplay.innerHTML = `<div class="modal fade show" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="display: block;">
+ <div class="modal-dialog">
+   <div class="modal-content">
+     <div class="modal-header">
+       <h1 class="modal-title fs-5" id="staticBackdropLabel">Weather Report</h1>
+       <button type="button"  onclick="closePopup()" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+     </div>
+     <div class="modal-body">
+       <p>Temperature</p>
+       <h6>${data.main.temp}</h6>
+       <p>Weather description</p>
+       <h6>${data.weather[0].description}</h6>
+     </div>
+   </div>
+ </div>
+</div>`;
+
+ }
+ function closePopup(){
+  document.getElementById("staticBackdrop").style.display = "none";
+ }
